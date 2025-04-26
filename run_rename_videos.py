@@ -18,7 +18,13 @@ def main(input_folder: Path, is_dry: bool = True):
 
     filenames = list(input_folder.glob("*"))
     for fn in filenames:
-        meta = ffmpeg.probe(fn)
+        if fn.is_dir():
+            continue
+        try:
+            meta = ffmpeg.probe(fn)
+        except Exception as e:
+            print(f"some error with {fn}, skip")
+            continue
         if not filename_starts_with_date(fn):
             creation_time = meta["format"]["tags"]["creation_time"]
             year, month, day = creation_time[:4], creation_time[5:7], creation_time[8:10]
