@@ -26,13 +26,16 @@ def main(input_folder: Path, is_dry: bool = True):
             print(f"some error with {fn}, skip")
             continue
         if not filename_starts_with_date(fn):
-            creation_time = meta["format"]["tags"]["creation_time"]
-            year, month, day = creation_time[:4], creation_time[5:7], creation_time[8:10]
-            new_filename = fn.parent / f"{year}{month}{day}_{fn.name}"
-            if is_dry:
-                print(f"{fn} -> {new_filename}")
-            else:
-                fn.rename(new_filename)
+            try:
+                creation_time = meta["format"]["tags"]["creation_time"]
+                year, month, day = creation_time[:4], creation_time[5:7], creation_time[8:10]
+                new_filename = fn.parent / f"{year}{month}{day}_{fn.name}"
+                if is_dry:
+                    print(f"{fn} -> {new_filename}")
+                else:
+                    fn.rename(new_filename)
+            except Exception as e:
+                raise ValueError(f"Error processing {fn}: {e}")
         else:
             if is_dry:
                 print(f"{fn} unchanged.")
